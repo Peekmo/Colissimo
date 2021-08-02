@@ -43,7 +43,13 @@ class Fields extends ArrayOfModel
     {
         $denormalized = [];
         foreach ($data as $key => $value) {
-            $denormalized[] = new Field($key, $value);
+            if (is_array($value) && isset($value['key'])) {
+			    $denormalized[] = new Field($value['key'], $value['value']);
+		    } else if (is_array($value)) {
+			    $denormalized = array_merge($denormalized, $this->denormalize($value, $class, $format, $context));
+		    } else {
+                $denormalized[] = new Field($key, $value);
+		    }
         }
 
         return $denormalized;
